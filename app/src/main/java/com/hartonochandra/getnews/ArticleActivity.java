@@ -11,12 +11,12 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class SourceActivity extends AppCompatActivity {
+public class ArticleActivity extends AppCompatActivity {
     class DownloadTask extends AsyncTask<String, Void, String> {
-        private SourceActivity sourceActivity;
+        private ArticleActivity articleActivity;
 
-        public DownloadTask(SourceActivity sourceActivity) {
-            this.sourceActivity = sourceActivity;
+        public DownloadTask(ArticleActivity articleActivity) {
+            this.articleActivity = articleActivity;
         }
 
         @Override
@@ -31,18 +31,17 @@ public class SourceActivity extends AppCompatActivity {
             try {
 
                 JSONObject jsonObject = new JSONObject(result);
-                JSONArray arr = jsonObject.getJSONArray("sources");
+                JSONArray arr = jsonObject.getJSONArray("articles");
 
-                ArrayList<Source> sources = new ArrayList<Source>();
+                ArrayList<Article> articles = new ArrayList<Article>();
 
                 for (int i = 0; i < arr.length(); i++) {
                     JSONObject jsonPart = arr.getJSONObject(i);
-                    Source source = Source.fromJSONObject(jsonPart);
-                    sources.add(source);
+                    Article article = Article.fromJSONObject(jsonPart);
+                    articles.add(article);
                 }
 
-                sourceActivity.fillListView(sources);
-
+                articleActivity.fillListView(articles);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -52,15 +51,15 @@ public class SourceActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_source);
+        setContentView(R.layout.activity_article);
 
-        DownloadTask task = new DownloadTask(this);
-        task.execute("https://newsapi.org/v2/sources?category=technology&language=en&apiKey=f475e05b73974cc393c210ad1f0f1ac2");
+        ArticleActivity.DownloadTask task = new ArticleActivity.DownloadTask(this);
+        task.execute("https://newsapi.org/v2/articles?category=technology&language=en&apiKey=f475e05b73974cc393c210ad1f0f1ac2");
     }
 
-    public void fillListView(ArrayList<Source> sources) {
-        ListView sourceListView = (ListView)findViewById(R.id.sourceListView);
-        SourceAdapter adapter = new SourceAdapter(this, sources);
-        sourceListView.setAdapter(adapter);
+    public void fillListView(ArrayList<Article> articles) {
+        ListView articleListView = (ListView)findViewById(R.id.articleListView);
+        ArticleAdapter adapter = new ArticleAdapter(this, articles);
+        articleListView.setAdapter(adapter);
     }
 }
