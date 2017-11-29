@@ -180,20 +180,12 @@ public class ArticleActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                if (query == null || query == "") {
-                    task.cancel(false);
-                    task = new DownloadTask(activity);
-                    task.execute("https://newsapi.org/v2/everything?sources=" + sourceId + "&language=en&page=1");
-
-                    return true;
-                }
-
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String query) {
-                if (query == null || query == "") {
+                if (query == null || query.isEmpty() || query == "") {
                     task.cancel(false);
                     task = new DownloadTask(activity);
                     task.execute("https://newsapi.org/v2/everything?sources=" + sourceId + "&language=en&page=1");
@@ -202,20 +194,7 @@ public class ArticleActivity extends AppCompatActivity {
                 }
                 else {
                     return false;
-//                    task.cancel(false);
-//                    task = new DownloadTask(activity);
-//                    task.execute("https://newsapi.org/v2/everything?q=" + query + "&sources=" + sourceId + "&language=en&page=1");
                 }
-            }
-        });
-
-        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                task.cancel(false);
-                task = new DownloadTask(activity);
-                task.execute("https://newsapi.org/v2/everything?sources=" + sourceId + "&language=en&page=1");
-                return true;
             }
         });
 
