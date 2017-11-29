@@ -6,6 +6,19 @@
     android:layout_height="match_parent"
     tools:context="com.hartonochandra.getnews.SourceActivity">
 
+    <TextView
+        android:id="@+id/nodataTextView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="No data found."
+        android:padding="16dp"
+        android:textAlignment="center"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyle"

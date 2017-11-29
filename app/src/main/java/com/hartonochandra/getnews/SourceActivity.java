@@ -1,16 +1,15 @@
 package com.hartonochandra.getnews;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -126,8 +125,12 @@ public class SourceActivity extends AppCompatActivity {
 
         initActionBar();
 
-        progressBar = (ProgressBar)findViewById(R.id.progressBar);
+        TextView nodataTextView = (TextView)findViewById(R.id.nodataTextView);
+        nodataTextView.setVisibility(View.INVISIBLE);
         sourceListView = (ListView)findViewById(R.id.sourceListView);
+        sourceListView.setEmptyView(nodataTextView);
+
+        progressBar = (ProgressBar)findViewById(R.id.progressBar);
 
         task = new DownloadTask(this);
         task.execute("https://newsapi.org/v2/sources?category=technology&language=en");

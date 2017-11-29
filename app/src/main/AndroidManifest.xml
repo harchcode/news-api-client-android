@@ -18,8 +18,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ArticleActivity" android:label="article"
-            android:launchMode="singleTop">
+        <activity android:name=".ArticleActivity" android:launchMode="singleTop">
             <meta-data android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
             <intent-filter>

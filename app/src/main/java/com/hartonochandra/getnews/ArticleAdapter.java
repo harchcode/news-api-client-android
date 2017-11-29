@@ -7,6 +7,11 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
+
 import java.util.ArrayList;
 
 public class ArticleAdapter extends BaseAdapter {
@@ -45,6 +50,33 @@ public class ArticleAdapter extends BaseAdapter {
 
         TextView articleDescriptionTextView = rowView.findViewById(R.id.articleDescriptionTextView);
         articleDescriptionTextView.setText(article.description);
+
+        DateTimeZone localTimeZone = DateTimeZone.getDefault();
+        DateTime utcTime = DateTime.parse(article.publishedAt);
+        DateTime localTime = utcTime.withZone(localTimeZone);
+
+        DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                .appendDayOfWeekShortText()
+                .appendLiteral(", ")
+                .appendDayOfMonth(2)
+                .appendLiteral('-')
+                .appendMonthOfYearShortText()
+                .appendLiteral('-')
+                .appendYear(4, 4)
+                .appendLiteral(' ')
+                .appendHourOfDay(2)
+                .appendLiteral(':')
+                .appendMinuteOfHour(2)
+                .appendLiteral(':')
+                .appendSecondOfMinute(2)
+                .appendLiteral(' ')
+                .appendLiteral('(')
+                .appendTimeZoneShortName()
+                .appendLiteral(')')
+                .toFormatter();
+
+        TextView articleDateTextView = rowView.findViewById(R.id.articleDateTextView);
+        articleDateTextView.setText(formatter.print(localTime));
 
         return rowView;
     }

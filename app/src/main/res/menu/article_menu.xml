@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/searchItem"
-        android:title="@string/search"
-        app:showAsAction="collapseActionView|ifRoom"
+        android:title="@string/searchTitle"
+        app:showAsAction="always"
         app:actionViewClass="android.widget.SearchView" />
 </menu>
