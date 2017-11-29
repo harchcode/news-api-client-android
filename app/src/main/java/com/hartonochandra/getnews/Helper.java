@@ -9,7 +9,7 @@ import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
 
 public class Helper {
-    public static String httpGet(String urlString) {
+    public static String httpsGet(String urlString) {
         String result = "";
 
         URL url;
@@ -18,6 +18,8 @@ public class Helper {
         try {
             url = new URL(urlString);
             urlConnection = (HttpsURLConnection)url.openConnection();
+
+            urlConnection.setRequestProperty("X-Api-Key", "f475e05b73974cc393c210ad1f0f1ac2");
 
             InputStream in = urlConnection.getInputStream();
             InputStreamReader reader = new InputStreamReader(in);
