@@ -9,12 +9,15 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
+
+import com.loopj.android.http.AsyncHttpClient;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,7 +35,7 @@ import javax.net.ssl.HttpsURLConnection;
 public class ArticleActivity extends AppCompatActivity {
     private ListView articleListView;
     private ProgressBar progressBar;
-    private DownloadTask task;
+    private AsyncHttpClient httpClient;
     private String sourceId;
 
     private class DownloadTask extends AsyncTask<String, Void, String> {
@@ -119,8 +122,31 @@ public class ArticleActivity extends AppCompatActivity {
 
         if (actionBar != null) {
             actionBar.setTitle("Articles from " + sourceName);
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        supportActionBar.setTitle("Articles from " + sourceName);
+
+        if (supportActionBar != null) {
+            supportActionBar.setTitle("Articles from " + sourceName);
+            supportActionBar.setHomeButtonEnabled(true);
+            supportActionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    void getArticles() {
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // app icon in action bar clicked; goto parent activity.
+                this.finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -140,8 +166,9 @@ public class ArticleActivity extends AppCompatActivity {
 
         initActionBar(sourceName);
 
-        task = new DownloadTask(this);
-        task.execute("https://newsapi.org/v2/everything?sources=" + sourceId + "&language=en&page=1");
+        httpClient = new AsyncHttpClient();
+//        task = new DownloadTask(this);
+//        task.execute("https://newsapi.org/v2/everything?sources=" + sourceId + "&language=en&page=1");
     }
 
     @Override
@@ -154,13 +181,13 @@ public class ArticleActivity extends AppCompatActivity {
             String query = intent.getStringExtra(SearchManager.QUERY);
 
             if (query == null || query == "") {
-                task.cancel(false);
-                task = new DownloadTask(this);
-                task.execute("https://newsapi.org/v2/everything?sources=" + sourceId + "&language=en&page=1");
+//                task.cancel(false);
+//                task = new DownloadTask(this);
+//                task.execute("https://newsapi.org/v2/everything?sources=" + sourceId + "&language=en&page=1");
             } else {
-                task.cancel(false);
-                task = new DownloadTask(this);
-                task.execute("https://newsapi.org/v2/everything?q=" + query + "&sources=" + sourceId + "&language=en&page=1");
+//                task.cancel(false);
+//                task = new DownloadTask(this);
+//                task.execute("https://newsapi.org/v2/everything?q=" + query + "&sources=" + sourceId + "&language=en&page=1");
             }
         }
     }
@@ -190,9 +217,9 @@ public class ArticleActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String query) {
                 if (query == null || query.isEmpty() || query == "") {
-                    task.cancel(false);
-                    task = new DownloadTask(activity);
-                    task.execute("https://newsapi.org/v2/everything?sources=" + sourceId + "&language=en&page=1");
+//                    task.cancel(false);
+//                    task = new DownloadTask(activity);
+//                    task.execute("https://newsapi.org/v2/everything?sources=" + sourceId + "&language=en&page=1");
 
                     return true;
                 }
@@ -209,7 +236,7 @@ public class ArticleActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
-        task.cancel(false);
+//        task.cancel(false);
     }
 
     public void fillListView(final ArrayList<Article> articles) {

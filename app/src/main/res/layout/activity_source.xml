@@ -10,7 +10,7 @@
         android:id="@+id/nodataTextView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="No data found."
+        android:text="@string/nodata"
         android:padding="16dp"
         android:textAlignment="center"
         android:visibility="invisible"

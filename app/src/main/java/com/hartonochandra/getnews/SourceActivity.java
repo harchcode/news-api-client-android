@@ -1,7 +1,6 @@
 package com.hartonochandra.getnews;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -10,103 +9,23 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 
-import javax.net.ssl.HttpsURLConnection;
+import cz.msebera.android.httpclient.Header;
 
 public class SourceActivity extends AppCompatActivity {
     private ListView sourceListView;
-    private DownloadTask task;
     private ProgressBar progressBar;
-
-    private class DownloadTask extends AsyncTask<String, Void, String> {
-        private SourceActivity sourceActivity;
-
-        public DownloadTask(SourceActivity sourceActivity) {
-            this.sourceActivity = sourceActivity;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            sourceListView.setVisibility(View.INVISIBLE);
-            progressBar.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected String doInBackground(String... urls) {
-            String result = "";
-
-            URL url;
-            HttpsURLConnection urlConnection = null;
-
-            try {
-                url = new URL(urls[0]);
-                urlConnection = (HttpsURLConnection)url.openConnection();
-
-                urlConnection.setRequestProperty("X-Api-Key", "f475e05b73974cc393c210ad1f0f1ac2");
-
-                InputStream in = urlConnection.getInputStream();
-                InputStreamReader reader = new InputStreamReader(in);
-
-                int data = reader.read();
-
-                while (data != -1) {
-                    if (isCancelled()) {
-                        return "";
-                    }
-
-                    char current = (char)data;
-                    result += current;
-                    data = reader.read();
-                }
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
-            sourceListView.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.INVISIBLE);
-
-            try {
-
-                JSONObject jsonObject = new JSONObject(result);
-                JSONArray arr = jsonObject.getJSONArray("sources");
-
-                ArrayList<Source> sources = new ArrayList<Source>();
-
-                for (int i = 0; i < arr.length(); i++) {
-                    JSONObject jsonPart = arr.getJSONObject(i);
-                    Source source = Source.fromJSONObject(jsonPart);
-                    sources.add(source);
-                }
-
-                sourceActivity.fillListView(sources);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+    private AsyncHttpClient httpClient;
 
     void initActionBar() {
         android.app.ActionBar actionBar = getActionBar();
@@ -115,7 +34,10 @@ public class SourceActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setTitle("Source List");
         }
-        supportActionBar.setTitle("Source List");
+
+        if (supportActionBar != null) {
+            supportActionBar.setTitle("Source List");
+        }
     }
 
     @Override
@@ -132,15 +54,57 @@ public class SourceActivity extends AppCompatActivity {
 
         progressBar = (ProgressBar)findViewById(R.id.progressBar);
 
-        task = new DownloadTask(this);
-        task.execute("https://newsapi.org/v2/sources?category=technology&language=en");
+        httpClient = new AsyncHttpClient();
+        httpClient.addHeader("X-Api-Key", "f475e05b73974cc393c210ad1f0f1ac2");
+        httpClient.get("https://newsapi.org/v2/sources?category=technology&language=en", null, new JsonHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                sourceListView.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                sourceListView.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.INVISIBLE);
+
+                try {
+                    JSONArray arr = response.getJSONArray("sources");
+
+                    ArrayList<Source> sources = new ArrayList<Source>();
+
+                    for (int i = 0; i < arr.length(); i++) {
+                        JSONObject jsonPart = arr.getJSONObject(i);
+                        Source source = Source.fromJSONObject(jsonPart);
+                        sources.add(source);
+                    }
+
+                    SourceActivity.this.fillListView(sources);
+
+                } catch (JSONException e) {
+                    Toast.makeText(SourceActivity.this,
+                            "Error when reading data from server.",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable e, JSONObject response) {
+                sourceListView.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.INVISIBLE);
+
+                Toast.makeText(SourceActivity.this,
+                        "Failed to fetch data from server.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
     protected  void onPause() {
         super.onPause();
 
-        task.cancel(false);
+        httpClient.cancelAllRequests(false);
     }
 
     public void fillListView(final ArrayList<Source> sources) {
