@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,29 +24,15 @@ import java.util.ArrayList;
 import cz.msebera.android.httpclient.Header;
 
 public class SourceActivity extends AppCompatActivity {
-    private ListView sourceListView;
+    private ListView    sourceListView;
     private ProgressBar progressBar;
-    private AsyncHttpClient httpClient;
-
-    void initActionBar() {
-        android.app.ActionBar actionBar = getActionBar();
-        ActionBar supportActionBar = getSupportActionBar();
-
-        if (actionBar != null) {
-            actionBar.setTitle("Source List");
-        }
-
-        if (supportActionBar != null) {
-            supportActionBar.setTitle("Source List");
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_source);
 
-        initActionBar();
+        Helper.setActionBarTitle(this, getString(R.string.source_title));
 
         TextView nodataTextView = (TextView)findViewById(R.id.nodataTextView);
         nodataTextView.setVisibility(View.INVISIBLE);
@@ -54,60 +41,76 @@ public class SourceActivity extends AppCompatActivity {
 
         progressBar = (ProgressBar)findViewById(R.id.progressBar);
 
-        httpClient = new AsyncHttpClient();
-        httpClient.addHeader("X-Api-Key", "f475e05b73974cc393c210ad1f0f1ac2");
-        httpClient.get("https://newsapi.org/v2/sources?category=technology&language=en", null, new JsonHttpResponseHandler() {
+        getSources();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        NewsAPIClient.cancelAllRequests();
+    }
+
+    private void getSources() {
+        RequestParams params = new RequestParams();
+        params.put("category", "technology");
+        params.put("language", "en");
+
+        NewsAPIClient.get("sources", params, new JsonHttpResponseHandler() {
             @Override
             public void onStart() {
-                sourceListView.setVisibility(View.INVISIBLE);
-                progressBar.setVisibility(View.VISIBLE);
+                showProgress();
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                sourceListView.setVisibility(View.VISIBLE);
-                progressBar.setVisibility(View.INVISIBLE);
+                hideProgress();
 
-                try {
-                    JSONArray arr = response.getJSONArray("sources");
-
-                    ArrayList<Source> sources = new ArrayList<Source>();
-
-                    for (int i = 0; i < arr.length(); i++) {
-                        JSONObject jsonPart = arr.getJSONObject(i);
-                        Source source = Source.fromJSONObject(jsonPart);
-                        sources.add(source);
-                    }
-
-                    SourceActivity.this.fillListView(sources);
-
-                } catch (JSONException e) {
-                    Toast.makeText(SourceActivity.this,
-                            "Error when reading data from server.",
-                            Toast.LENGTH_SHORT).show();
-                }
+                processSourcesJSON(response);
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable e, JSONObject response) {
-                sourceListView.setVisibility(View.VISIBLE);
-                progressBar.setVisibility(View.INVISIBLE);
+                hideProgress();
 
-                Toast.makeText(SourceActivity.this,
-                        "Failed to fetch data from server.",
-                        Toast.LENGTH_SHORT).show();
+                onRequestFailed();
             }
         });
     }
 
-    @Override
-    protected  void onPause() {
-        super.onPause();
-
-        httpClient.cancelAllRequests(false);
+    private void showProgress() {
+        sourceListView.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
     }
 
-    public void fillListView(final ArrayList<Source> sources) {
+    private void hideProgress() {
+        sourceListView.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.INVISIBLE);
+    }
+
+    private void processSourcesJSON(JSONObject json) {
+        try {
+            JSONArray arr = json.getJSONArray("sources");
+
+            ArrayList<Source> sources = new ArrayList<Source>();
+
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject jsonPart = arr.getJSONObject(i);
+                Source source = Source.fromJSONObject(jsonPart);
+                sources.add(source);
+            }
+
+            SourceActivity.this.fillListView(sources);
+        } catch (JSONException e) {
+            Helper.toast(this, getString(R.string.error_json));
+        }
+    }
+
+    private void onRequestFailed() {
+        Helper.toast(this, getString(R.string.error_server));
+    }
+
+    private void fillListView(final ArrayList<Source> sources) {
         SourceAdapter adapter = new SourceAdapter(this, sources);
         sourceListView.setAdapter(adapter);
 

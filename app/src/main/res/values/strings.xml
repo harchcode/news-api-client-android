@@ -2,4 +2,11 @@
     <string name="app_name">News API Client</string>
     <string name="search_title">Search</string>
     <string name="nodata">No data found.</string>
+    <string name="source_title">Source List</string>
+    <string name="article_title">Articles from</string>
+    <string name="error_json">Error when reading data from server.</string>
+    <string name="error_server">Failed to fetch data from server.</string>
+
+    <string name="news_api_url">https://newsapi.org/v2/</string>
+    <string name="news_api_key">f475e05b73974cc393c210ad1f0f1ac2</string>
 </resources>

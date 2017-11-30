@@ -1,5 +1,10 @@
 package com.hartonochandra.getnews;
 
+import android.app.Activity;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -9,34 +14,37 @@ import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
 
 public class Helper {
-    public static String httpsGet(String urlString) {
-        String result = "";
+    public static void setActionBarTitle(AppCompatActivity activity, String title) {
+        android.app.ActionBar actionBar = activity.getActionBar();
+        ActionBar supportActionBar = activity.getSupportActionBar();
 
-        URL url;
-        HttpsURLConnection urlConnection = null;
-
-        try {
-            url = new URL(urlString);
-            urlConnection = (HttpsURLConnection)url.openConnection();
-
-            urlConnection.setRequestProperty("X-Api-Key", "f475e05b73974cc393c210ad1f0f1ac2");
-
-            InputStream in = urlConnection.getInputStream();
-            InputStreamReader reader = new InputStreamReader(in);
-
-            int data = reader.read();
-
-            while (data != -1) {
-                char current = (char)data;
-                result += current;
-                data = reader.read();
-            }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (actionBar != null) {
+            actionBar.setTitle(title);
         }
 
-        return result;
+        if (supportActionBar != null) {
+            supportActionBar.setTitle(title);
+        }
+    }
+
+    public static void enableActionBarBackButton(AppCompatActivity activity) {
+        android.app.ActionBar actionBar = activity.getActionBar();
+        ActionBar supportActionBar = activity.getSupportActionBar();
+
+        if (actionBar != null) {
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
+        if (supportActionBar != null) {
+            supportActionBar.setHomeButtonEnabled(true);
+            supportActionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    public static void toast(Activity activity, String text) {
+        Toast.makeText(activity,
+                text,
+                Toast.LENGTH_SHORT).show();
     }
 }

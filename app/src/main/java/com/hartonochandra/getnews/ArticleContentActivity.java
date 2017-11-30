@@ -22,7 +22,8 @@ public class ArticleContentActivity extends AppCompatActivity {
         Intent intent = getIntent();
         articleUrl = intent.getStringExtra("articleUrl");
 
-        initActionBar();
+        Helper.setActionBarTitle(this, articleUrl);
+        Helper.enableActionBarBackButton(this);
 
         final ProgressBar progressBar = (ProgressBar)findViewById(R.id.progressBar);
         final WebView articleContentWebView = (WebView)findViewById(R.id.articleContentWebView);
@@ -41,23 +42,6 @@ public class ArticleContentActivity extends AppCompatActivity {
         });
 
         articleContentWebView.loadUrl(articleUrl);
-    }
-
-    void initActionBar() {
-        android.app.ActionBar actionBar = getActionBar();
-        ActionBar supportActionBar = getSupportActionBar();
-
-        if (actionBar != null) {
-            actionBar.setTitle(articleUrl);
-            actionBar.setHomeButtonEnabled(true);
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-
-        if (supportActionBar != null) {
-            supportActionBar.setTitle(articleUrl);
-            supportActionBar.setHomeButtonEnabled(true);
-            supportActionBar.setDisplayHomeAsUpEnabled(true);
-        }
     }
 
     @Override
