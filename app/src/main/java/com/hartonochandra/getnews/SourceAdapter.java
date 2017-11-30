@@ -1,3 +1,7 @@
+/*
+ * Created by Hartono Chandra
+ */
+
 package com.hartonochandra.getnews;
 
 import android.content.Context;
@@ -8,6 +12,10 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+
+/**
+ * The Adapter class for Source ListView
+ */
 
 public class SourceAdapter extends BaseAdapter {
     private Context           context;

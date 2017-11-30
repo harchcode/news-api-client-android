@@ -1,7 +1,15 @@
+/*
+ * Created by Hartono Chandra
+ */
+
 package com.hartonochandra.getnews;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+/**
+ * Source model class
+ */
 
 public class Source {
     public String id;
@@ -12,6 +20,10 @@ public class Source {
     public String language;
     public String country;
 
+    /**
+     * @param jsonObject
+     * @return new Source object from the given JSON Object
+     */
     public static Source fromJSONObject(JSONObject jsonObject) {
         Source source = new Source();
 

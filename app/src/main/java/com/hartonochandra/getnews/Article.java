@@ -1,7 +1,15 @@
+/*
+ * Created by Hartono Chandra
+ */
+
 package com.hartonochandra.getnews;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+/**
+ * Article model class
+ */
 
 public class Article {
     public String author;
@@ -11,6 +19,10 @@ public class Article {
     public String urlToImage;
     public String publishedAt;
 
+    /**
+     * @param jsonObject
+     * @return new Article object from the given JSON Object
+     */
     public static Article fromJSONObject(JSONObject jsonObject) {
         Article article = new Article();
 

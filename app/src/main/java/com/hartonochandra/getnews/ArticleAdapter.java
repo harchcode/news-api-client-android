@@ -1,3 +1,7 @@
+/*
+ * Created by Hartono Chandra
+ */
+
 package com.hartonochandra.getnews;
 
 import android.content.Context;
@@ -13,6 +17,10 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 
 import java.util.ArrayList;
+
+/**
+ * The Adapter class for Article ListView
+ */
 
 public class ArticleAdapter extends BaseAdapter {
     private Context           context;
@@ -55,6 +63,22 @@ public class ArticleAdapter extends BaseAdapter {
         DateTime utcTime = DateTime.parse(article.publishedAt);
         DateTime localTime = utcTime.withZone(localTimeZone);
 
+        TextView articleDateTextView = rowView.findViewById(R.id.articleDateTextView);
+        articleDateTextView.setText(toLocalePrettyDateString(article.publishedAt));
+
+        return rowView;
+    }
+
+    /**
+     * Converts to locale pretty date time string using jodatime.
+     * @param datetime string in ISO datetime format.
+     * @return pretty printed date time locale string.
+     */
+    private String toLocalePrettyDateString(String datetime) {
+        DateTimeZone localTimeZone = DateTimeZone.getDefault();
+        DateTime utcTime = DateTime.parse(datetime);
+        DateTime localTime = utcTime.withZone(localTimeZone);
+
         DateTimeFormatter formatter = new DateTimeFormatterBuilder()
                 .appendDayOfWeekShortText()
                 .appendLiteral(", ")
@@ -75,9 +99,6 @@ public class ArticleAdapter extends BaseAdapter {
                 .appendLiteral(')')
                 .toFormatter();
 
-        TextView articleDateTextView = rowView.findViewById(R.id.articleDateTextView);
-        articleDateTextView.setText(formatter.print(localTime));
-
-        return rowView;
+        return formatter.print(localTime);
     }
 }

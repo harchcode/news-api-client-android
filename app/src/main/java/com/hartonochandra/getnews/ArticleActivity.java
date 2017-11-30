@@ -1,12 +1,13 @@
+/*
+ * Created by Hartono Chandra
+ */
+
 package com.hartonochandra.getnews;
 
-import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,9 +18,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
@@ -38,8 +37,13 @@ import javax.net.ssl.HttpsURLConnection;
 
 import cz.msebera.android.httpclient.Header;
 
+/**
+ * The Article Activity
+ */
+
 public class ArticleActivity extends AppCompatActivity {
     private ListView    articleListView;
+    private TextView    nodataTextView;
     private ProgressBar progressBar;
     private String      sourceId;
 
@@ -48,15 +52,13 @@ public class ArticleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article);
 
-        TextView nodataTextView = (TextView)findViewById(R.id.nodataTextView);
+        nodataTextView = (TextView)findViewById(R.id.nodataTextView);
         articleListView = (ListView)findViewById(R.id.articleListView);
-        articleListView.setEmptyView(nodataTextView);
-
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         Intent intent = getIntent();
-        String sourceName = intent.getStringExtra("sourceName");
         sourceId = intent.getStringExtra("sourceId");
+        String sourceName = intent.getStringExtra("sourceName");
 
         String actionBarTitle = getString(R.string.article_title) + " " + sourceName;
         Helper.setActionBarTitle(this, actionBarTitle);
@@ -100,6 +102,7 @@ public class ArticleActivity extends AppCompatActivity {
     }
 
     private void handleIntent(Intent intent) {
+        // Handles search intent
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
 
@@ -117,6 +120,8 @@ public class ArticleActivity extends AppCompatActivity {
         searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));
 
+        // Need this event listener so the query are sent when
+        // we clear the search query.
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) { return false; }
@@ -134,6 +139,9 @@ public class ArticleActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Requests article list from newsapi.org.
+     */
     private void getArticles(String query) {
         RequestParams params = new RequestParams();
 
@@ -169,12 +177,17 @@ public class ArticleActivity extends AppCompatActivity {
 
     private void showProgress() {
         articleListView.setVisibility(View.INVISIBLE);
+        nodataTextView.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
     }
 
     private void hideProgress() {
         articleListView.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.INVISIBLE);
+    }
+
+    private void showNoData() {
+        nodataTextView.setVisibility(View.VISIBLE);
     }
 
     private void processArticlesJSON(JSONObject json) {
@@ -199,7 +212,7 @@ public class ArticleActivity extends AppCompatActivity {
         Helper.toast(this, getString(R.string.error_server));
     }
 
-    public void fillListView(final ArrayList<Article> articles) {
+    private void fillListView(final ArrayList<Article> articles) {
         ArticleAdapter adapter = new ArticleAdapter(this, articles);
         articleListView.setAdapter(adapter);
 
@@ -211,5 +224,7 @@ public class ArticleActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        if (articles.size() <= 0) { showNoData(); }
     }
 }

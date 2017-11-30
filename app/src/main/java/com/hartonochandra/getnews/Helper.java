@@ -1,3 +1,7 @@
+/*
+ * Created by Hartono Chandra
+ */
+
 package com.hartonochandra.getnews;
 
 import android.app.Activity;
@@ -13,7 +17,17 @@ import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
+/**
+ * Helper class
+ * Provides common functionality that can be called by other classes.
+ */
+
 public class Helper {
+    /**
+     * Sets activity's action bar's title.
+     * @param activity
+     * @param title
+     */
     public static void setActionBarTitle(AppCompatActivity activity, String title) {
         android.app.ActionBar actionBar = activity.getActionBar();
         ActionBar supportActionBar = activity.getSupportActionBar();
@@ -27,6 +41,10 @@ public class Helper {
         }
     }
 
+    /**
+     * Enables back button on the activity's action bar.
+     * @param activity
+     */
     public static void enableActionBarBackButton(AppCompatActivity activity) {
         android.app.ActionBar actionBar = activity.getActionBar();
         ActionBar supportActionBar = activity.getSupportActionBar();
@@ -42,6 +60,11 @@ public class Helper {
         }
     }
 
+    /**
+     * Displays simple toast.
+     * @param activity
+     * @param text
+     */
     public static void toast(Activity activity, String text) {
         Toast.makeText(activity,
                 text,

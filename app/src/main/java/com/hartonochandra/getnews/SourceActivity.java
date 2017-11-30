@@ -1,3 +1,7 @@
+/*
+ * Created by Hartono Chandra
+ */
+
 package com.hartonochandra.getnews;
 
 import android.content.Intent;
@@ -23,8 +27,13 @@ import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 
+/**
+ * The Source Activity
+ */
+
 public class SourceActivity extends AppCompatActivity {
     private ListView    sourceListView;
+    private TextView    nodataTextView;
     private ProgressBar progressBar;
 
     @Override
@@ -34,11 +43,8 @@ public class SourceActivity extends AppCompatActivity {
 
         Helper.setActionBarTitle(this, getString(R.string.source_title));
 
-        TextView nodataTextView = (TextView)findViewById(R.id.nodataTextView);
-        nodataTextView.setVisibility(View.INVISIBLE);
+        nodataTextView = (TextView)findViewById(R.id.nodataTextView);
         sourceListView = (ListView)findViewById(R.id.sourceListView);
-        sourceListView.setEmptyView(nodataTextView);
-
         progressBar = (ProgressBar)findViewById(R.id.progressBar);
 
         getSources();
@@ -51,6 +57,9 @@ public class SourceActivity extends AppCompatActivity {
         NewsAPIClient.cancelAllRequests();
     }
 
+    /**
+     * Requests source list from newsapi.org.
+     */
     private void getSources() {
         RequestParams params = new RequestParams();
         params.put("category", "technology");
@@ -80,6 +89,7 @@ public class SourceActivity extends AppCompatActivity {
 
     private void showProgress() {
         sourceListView.setVisibility(View.INVISIBLE);
+        nodataTextView.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
     }
 
@@ -88,13 +98,19 @@ public class SourceActivity extends AppCompatActivity {
         progressBar.setVisibility(View.INVISIBLE);
     }
 
+    private void showNoData() {
+        nodataTextView.setVisibility(View.VISIBLE);
+    }
+
     private void processSourcesJSON(JSONObject json) {
         try {
             JSONArray arr = json.getJSONArray("sources");
 
             ArrayList<Source> sources = new ArrayList<Source>();
 
-            for (int i = 0; i < arr.length(); i++) {
+            int arrLength = arr.length();
+
+            for (int i = 0; i < arrLength; i++) {
                 JSONObject jsonPart = arr.getJSONObject(i);
                 Source source = Source.fromJSONObject(jsonPart);
                 sources.add(source);
@@ -123,5 +139,7 @@ public class SourceActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        if (sources.size() <= 0) { showNoData(); }
     }
 }

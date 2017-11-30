@@ -1,3 +1,7 @@
+/*
+ * Created by Hartono Chandra
+ */
+
 package com.hartonochandra.getnews;
 
 import com.loopj.android.http.AsyncHttpClient;

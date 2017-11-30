@@ -1,3 +1,7 @@
+/*
+ * Created by Hartono Chandra
+ */
+
 package com.hartonochandra.getnews;
 
 import android.content.Intent;
@@ -10,6 +14,10 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
+
+/**
+ * The Article Content Activity
+ */
 
 public class ArticleContentActivity extends AppCompatActivity {
     private String articleUrl;

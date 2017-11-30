@@ -1,6 +1,15 @@
+/*
+ * Created by Hartono Chandra
+ */
+
 package com.hartonochandra.getnews;
 
 import android.app.Application;
+
+/**
+ * Custom Appllication class.
+ * Needed to initialize the NewsAPIClient class.
+ */
 
 public class NewsAPIClientApplication extends Application {
     @Override
